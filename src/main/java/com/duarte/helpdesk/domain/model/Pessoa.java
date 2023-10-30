@@ -1,27 +1,35 @@
 package com.duarte.helpdesk.domain.model;
 
 import com.duarte.helpdesk.domain.enums.Perfil;
-import lombok.*;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
-public abstract class Pessoa {
+@Entity
+public abstract class Pessoa implements Serializable {
+    private static final long serialVersionUID = 1L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Integer id;
     protected String nome;
+    @Column(unique = true)
     protected String cpf;
+    @Column(unique = true)
     protected String email;
     protected String senha;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "PERFIS")
     protected Set<Integer> perfis = new HashSet<>();
+
+    @JsonFormat(pattern = "dd/MM/yyyy")
     protected LocalDate dataCriacao = LocalDate.now();
 
     public Pessoa() {
